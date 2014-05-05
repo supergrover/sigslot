@@ -48,12 +48,8 @@ class Object
     public:
         virtual ~Object();
 
-        friend class Binding;
-    protected:
         void add_binding(std::shared_ptr<Binding> b);
-
         void erase_binding(std::shared_ptr<Binding> b);
-
     private:
         std::list<std::shared_ptr<Binding>> _bindings;
 };
@@ -112,7 +108,7 @@ class Signal: public Object
          *
          * @see operator()
          */
-        void invoke(_ArgTypes... args)
+        void emit(_ArgTypes... args)
         {
             for(auto& slot: _slots) {
                 slot(args...);
@@ -127,11 +123,11 @@ class Signal: public Object
          *
          * @return void
          *
-         * @see invoke
+         * @see emit 
          */
         void operator()(_ArgTypes... args)
         {
-            invoke(args...);
+            emit(args...);
         }
 
     private:
