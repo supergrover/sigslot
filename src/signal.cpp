@@ -30,8 +30,6 @@
 
 #include <cassert>
 
-#include <algorithm>
-
 Object::~Object()
 {
     while(!_bindings.empty()) {

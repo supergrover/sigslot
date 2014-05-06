@@ -32,6 +32,7 @@
 
 #include <memory>
 #include <functional>
+#include <algorithm>
 
 #include <vector>
 #include <list>
@@ -49,7 +50,7 @@ class Object
         virtual ~Object();
 
         void add_binding(std::shared_ptr<Binding> b);
-        void erase_binding(std::shared_ptr<Binding> b);
+        virtual void erase_binding(std::shared_ptr<Binding> b);
     private:
         std::list<std::shared_ptr<Binding>> _bindings;
 };
@@ -80,6 +81,8 @@ class Signal: public Object
 {
     typedef std::function<void(_ArgTypes...)> _Fun;
 
+    typedef std::pair<std::shared_ptr<Binding>, _Fun> _BindingRef;
+
     public:
         /*
          * @brief bind a new slot to this signal
@@ -92,9 +95,11 @@ class Signal: public Object
         template <typename _Class>
         void bind(void(_Class::* slot)(_ArgTypes...), _Class* inst)
         {
-            _slots.push_back([=](_ArgTypes... args){return (inst->*slot)(args...);});
-
             std::shared_ptr<Binding> binding = Binding::create(this, inst);
+
+            _slots.push_back(_BindingRef(
+                       binding, [=](_ArgTypes... args){return (inst->*slot)(args...);}));
+
             inst->add_binding(binding);
             add_binding(binding);
         }
@@ -111,7 +116,7 @@ class Signal: public Object
         void emit(_ArgTypes... args)
         {
             for(auto& slot: _slots) {
-                slot(args...);
+                std::get<1>(slot)(args...);
             }
         }
 
@@ -130,8 +135,18 @@ class Signal: public Object
             emit(args...);
         }
 
+    protected:
+        void erase_binding(std::shared_ptr<Binding> b)
+        {
+            Object::erase_binding(b);
+
+            auto it = std::find_if(_slots.begin(), _slots.end(), [=](_BindingRef r) -> bool {
+                    return std::get<0>(r) == b;});
+            _slots.erase(it);
+        }
+
     private:
-        std::list<_Fun> _slots;
+        std::list<std::pair<std::shared_ptr<Binding>, _Fun>> _slots;
 };
 
 
