@@ -38,16 +38,16 @@
 #include <list>
 
 class Binding;
-class Object;
+class SigSlotBase;
 
 
 /*
  * @brief Base class for objects wishing to receive signals (i.e. have slots)
  */
-class Object
+class SigSlotBase 
 {
     public:
-        virtual ~Object();
+        virtual ~SigSlotBase();
 
         void add_binding(std::shared_ptr<Binding> b);
         virtual void erase_binding(std::shared_ptr<Binding> b);
@@ -65,19 +65,19 @@ class Binding: public std::enable_shared_from_this<Binding>
 
         Binding& operator=(const Binding& other) = delete;
 
-        static std::shared_ptr<Binding> create(Object* em, Object* recv);
+        static std::shared_ptr<Binding> create(SigSlotBase* em, SigSlotBase* recv);
 
         void unbind();
 
     private:
-        Binding(Object* emitter, Object* receiver);
+        Binding(SigSlotBase* emitter, SigSlotBase* receiver);
 
-        Object* _emitter;
-        Object* _receiver;
+        SigSlotBase* _emitter;
+        SigSlotBase* _receiver;
 };
 
 template <typename... _ArgTypes>
-class Signal: public Object
+class Signal: public SigSlotBase
 {
     typedef std::function<void(_ArgTypes...)> _Fun;
 
@@ -138,7 +138,7 @@ class Signal: public Object
     protected:
         void erase_binding(std::shared_ptr<Binding> b)
         {
-            Object::erase_binding(b);
+            SigSlotBase::erase_binding(b);
 
             auto it = std::find_if(_slots.begin(), _slots.end(), [=](_BindingRef r) -> bool {
                     return std::get<0>(r) == b;});

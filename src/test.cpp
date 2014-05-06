@@ -14,7 +14,7 @@ class Emitter
         }
 };
 
-class Receiver: public Object
+class Receiver: public SigSlotBase
 {
     public:
         void slot(int v)
