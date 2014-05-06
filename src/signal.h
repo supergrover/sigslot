@@ -27,8 +27,8 @@
  * MA 02110-1301  USA
  */
 
-#ifndef _SIGNAL_H
-#define _SIGNAL_H
+#ifndef SIGNAL_H_
+#define SIGNAL_H_
 
 #include <memory>
 #include <functional>
