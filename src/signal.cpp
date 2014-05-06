@@ -37,12 +37,12 @@ SigSlotBase::~SigSlotBase()
     }
 }
 
-void SigSlotBase::add_binding(std::shared_ptr<Binding> b)
+void SigSlotBase::add_binding(const std::shared_ptr<Binding>& b)
 {
     _bindings.push_back(b);
 }
 
-void SigSlotBase::erase_binding(std::shared_ptr<Binding> b)
+void SigSlotBase::erase_binding(const std::shared_ptr<Binding>& b)
 {
     auto pos = std::find(_bindings.begin(), _bindings.end(), b);
     if(pos == _bindings.end()) {

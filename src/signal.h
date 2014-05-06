@@ -49,8 +49,8 @@ class SigSlotBase
     public:
         virtual ~SigSlotBase();
 
-        void add_binding(std::shared_ptr<Binding> b);
-        virtual void erase_binding(std::shared_ptr<Binding> b);
+        void add_binding(const std::shared_ptr<Binding>& b);
+        virtual void erase_binding(const std::shared_ptr<Binding>& b);
     private:
         std::list<std::shared_ptr<Binding>> _bindings;
 };
@@ -136,7 +136,7 @@ class Signal: public SigSlotBase
         }
 
     protected:
-        void erase_binding(std::shared_ptr<Binding> b)
+        void erase_binding(const std::shared_ptr<Binding>& b)
         {
             SigSlotBase::erase_binding(b);
 
