@@ -140,7 +140,7 @@ class Signal: public SigSlotBase
         {
             SigSlotBase::erase_binding(b);
 
-            auto it = std::find_if(_slots.begin(), _slots.end(), [=](_BindingRef r) -> bool {
+            auto it = std::find_if(_slots.begin(), _slots.end(), [&b](_BindingRef r) -> bool {
                     return std::get<0>(r) == b;});
             _slots.erase(it);
         }
